@@ -2,7 +2,6 @@ var SERVER_NAME = 'Image-api'
 var PORT = 5000;
 var HOST = '127.0.0.1';
 
-
 var restify = require('restify')
 
   // Get a persistence engine for the images
@@ -27,6 +26,7 @@ server
 // Get all images in the system
 server.get('/images', function (req, res, next) {
 
+  console.log("/images - GET REQUEST- REQUEST RECEIVED")
   // Find every entity within the given collection
   ImagesSave.find({}, function (error, images) {
 
@@ -35,34 +35,27 @@ server.get('/images', function (req, res, next) {
   })
 })
 
-// Create a new user
+// Create a new image
 server.post('/images', function (req, res, next) {
 
-  // Make sure name is defined
-  if (req.params.name === undefined ) {
-    // If there are any errors, pass them to next in the correct format
-    return next(new restify.InvalidArgumentError('name must be supplied'))
-  }
-  if (req.params.age === undefined ) {
-    // If there are any errors, pass them to next in the correct format
-    return next(new restify.InvalidArgumentError('age must be supplied'))
-  }
-  var newUser = {
+  console.log("/images - POST REQUEST- REQUEST RECEIVED")
+  var newImage = {
+		imageId: req.params.imageId, 
 		name: req.params.name, 
-		age: req.params.age
+    url: req.params.url, 
+    size: req.params.size 
 	}
 
-  // Create the user using the persistence engine
-  ImagesSave.create( newUser, function (error, user) {
+  // Create the image using the persistence engine
+  ImagesSave.create(newImage, function (error, image) {
 
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
 
-    // Send the user if no issues
-    res.send(201, user)
+    // Send the image if no issues
+    res.send(201, image)
   })
 })
-
 
 // Delete user with the given id
 server.del('/images/:id', function (req, res, next) {
@@ -77,5 +70,3 @@ server.del('/images/:id', function (req, res, next) {
     res.send()
   })
 })
-
-
