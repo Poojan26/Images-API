@@ -2,6 +2,10 @@ var SERVER_NAME = 'Image-api'
 var PORT = 5000;
 var HOST = '127.0.0.1';
 
+// Declaration of counter 
+var getCount = 0; 
+var postCount = 0;
+
 var restify = require('restify')
 
   // Get a persistence engine for the images
@@ -25,12 +29,15 @@ server
 
 // Get all images in the system
 server.get('/images', function (req, res, next) {
+  // Increment count
+  getCount = getCount + 1;
 
-  console.log("/images - GET REQUEST- REQUEST RECEIVED")
+  console.log("/images - GET REQUEST- REQUEST RECEIVED");
   // Find every entity within the given collection
   ImagesSave.find({}, function (error, images) {
 
     // Return all of the images in the system
+    console.log("/images - GET REQUEST- SENDING RESPONSE GetCount: "+getCount);
     res.send(images)
   })
 })
@@ -38,7 +45,7 @@ server.get('/images', function (req, res, next) {
 // Create a new image
 server.post('/images', function (req, res, next) {
 
-  console.log("/images - POST REQUEST- REQUEST RECEIVED")
+  console.log("/images - POST REQUEST- REQUEST RECEIVED");
   var newImage = {
 		imageId: req.params.imageId, 
 		name: req.params.name, 
@@ -47,21 +54,25 @@ server.post('/images', function (req, res, next) {
 	}
 
   // Create the image using the persistence engine
-  ImagesSave.create(newImage, function (error, image) {
+  ImagesSave.create(newImage, function (error, images) {
+
+    //Increment count 
+    postCount = postCount + 1; 
 
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
 
     // Send the image if no issues
-    res.send(201, image)
+    console.log("/images - POST REQUEST- SENDING RESPONSE PostCount: "+postCount);
+    res.send(201, images)
   })
 })
 
-// Delete user with the given id
-server.del('/images/:id', function (req, res, next) {
+// Delete all images
+server.del('/images', function (req, res, next) {
 
-  // Delete the user with the persistence engine
-  ImagesSave.delete(req.params.id, function (error, user) {
+  // Delete the images with the persistence engine
+  ImagesSave.delete(req.params, function (error, images) {
 
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
