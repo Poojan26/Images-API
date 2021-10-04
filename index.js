@@ -71,8 +71,8 @@ server.post('/images', function (req, res, next) {
 // Delete all images
 server.del('/images', function (req, res, next) {
 
-  // Delete the images with the persistence engine
-  ImagesSave.delete(req.params, function (error, images) {
+  // Delete the many images with the persistence engine
+  ImagesSave.deleteMany(req.params, function (error, images) {
 
     // If there are any errors, pass them to next in the correct format
     if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
